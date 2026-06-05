@@ -73,13 +73,18 @@ local mason_lsp_ok, mason_lsp = pcall(require, "mason-lspconfig")
 local cmp_lsp_ok, cmp_lsp = pcall(require, "cmp_nvim_lsp")
 
 if mason_lsp_ok and cmp_lsp_ok then
-  mason_lsp.setup({ ensure_installed = { "lua_ls" } })
+  local servers = { "lua_ls", "clangd", "gopls", "html", "cssls", "ts_ls" }
+  
+  mason_lsp.setup({ ensure_installed = servers })
   local capabilities = cmp_lsp.default_capabilities()
   
-  if vim.lsp.config then
-    vim.lsp.config("lua_ls", {
-      capabilities = capabilities,
-    })
+  for _, server in ipairs(servers) do
+    if vim.lsp.config then
+      vim.lsp.config(server, {
+        capabilities = capabilities,
+      })
+      vim.lsp.enable(server)
+    end
   end
 end
 
